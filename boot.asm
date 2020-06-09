@@ -50,23 +50,23 @@ start:
     push eax
     push ebx
 
-check_long_mode:
+.check_long_mode:
     ; Test for required cpuid function
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
-    jb no64
+    jb .no64
 
     ; Test for long mode
     mov eax, 0x80000001
     cpuid
     test edx, 1 << 29
-    jz no64
+    jz .no64
 
-init_page_tables:
+.init_page_tables:
     ; Used to be manual, removed in commit 160
 
-set_paging:
+.set_paging:
     ; And set up paging
     mov eax, PML4  ; PML4 pointer
     mov cr3, eax
@@ -92,10 +92,10 @@ set_paging:
     ; or eax, 1 << 17 ; PCIDE
     mov cr4, eax
 
-enable_fpu:
+.enable_fpu:
     fninit
 
-enable_sse:
+.enable_sse:
     mov eax, cr0
     and eax, ~(1 << 2) ; Clear CR0.EM
     or eax, 1 << 1     ; Set CR0.MP
@@ -105,7 +105,7 @@ enable_sse:
     or eax, 3 << 9     ; Set CR4.OSFXSR and CR4.OSXMMEXCPT
     mov cr4, eax
 
-finish_init:
+.finish_init:
     lgdt [low_gdtp]
 
     mov dword [0xb8002], 0x2f4b2f4f ; OK
@@ -113,7 +113,7 @@ finish_init:
     jmp gdt64.codedesc:start_64
 
 
-no64:
+.no64:
     ; There is no long mode, print an error and halt
     mov dword [0xb8000], 0x4f6f4f6e ; no
     mov dword [0xb8004], 0x4f344f36 ; 64
