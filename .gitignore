@@ -1,4 +1,5 @@
-boot.o
+*.o
+
 nimcache
 nimkernel
 last_output
