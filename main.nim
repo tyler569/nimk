@@ -25,4 +25,12 @@ proc kernel_main() {.exportc.} =
 
   writeString(vram, "This (should) error out", (80, 24))
 
+proc panic(message: string) =
+  writeString(vram, "Panic: ", (0, 24))
+  writeString(vram, message, (7, 24))
 
+  while true:
+    discard
+
+proc stack_chk_fail() {.exportc: "__stack_chk_fail".} =
+  panic("Stack check fail")

@@ -8,7 +8,4 @@ proc rawoutput(s: string) =
 proc panic(s: string) =
   rawoutput(s)
 
-# proc stack_chk_fail() {.exportc: "__stack_chk_fail".} =
-#   panic("Stack check fail")
-
 {.pop.}

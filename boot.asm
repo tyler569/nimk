@@ -401,6 +401,3 @@ read_ip:
     mov rax, [rsp]
     ret
 
-global __stack_chk_fail
-__stack_chk_fail:
-    ret
