@@ -42,8 +42,8 @@ proc write_array*[N](vram: PVIDMem, text: array[N, char], pos: TPos) =
     vram.writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
 
 proc shift_buffer(buffer: var array[0..15, char]) =
-  for i in 15 .. 1:
-    buffer[i-1] = buffer[i]
+  for i in countdown(15, 0):
+    buffer[i+1] = buffer[i]
 
 proc to_char(i: int): char =
   return char (ord('0') + i)
@@ -57,12 +57,12 @@ proc write_int*(vram: PVIDMem, number: int, pos: TPos) =
   buffer[0] = '0'
 
   while num > 0:
-    digits += 1
-    shift_buffer(buffer)
+    if digits > 0: shift_buffer(buffer)
 
     let digit = ord(num mod 10)
     num = num div 10
     buffer[0] = to_char digit
+    digits += 1
 
   if digits == 0: digits = 1
   
