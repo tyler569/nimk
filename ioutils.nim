@@ -1,5 +1,3 @@
-# import unsigned
-#
 const
   VGAWidth* = 80
   VGAHeight* = 25
@@ -38,3 +36,34 @@ proc writeString*(vram: PVidMem, text: string, pos: TPos) =
 
   for i in 0 ..< text.len:
     vram.writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
+
+proc write_array*[N](vram: PVIDMem, text: array[N, char], pos: TPos) =
+  for i in 0 ..< text.len:
+    vram.writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
+
+proc shift_buffer(buffer: var array[0..15, char]) =
+  for i in 15 .. 1:
+    buffer[i-1] = buffer[i]
+
+proc to_char(i: int): char =
+  return char (ord('0') + i)
+
+proc write_int*(vram: PVIDMem, number: int, pos: TPos) =
+  var
+    buffer: array[0..15, char]
+    num = number
+    digits = 0
+
+  buffer[0] = '0'
+
+  while num > 0:
+    digits += 1
+    shift_buffer(buffer)
+
+    let digit = ord(num mod 10)
+    num = num div 10
+    buffer[0] = to_char digit
+
+  if digits == 0: digits = 1
+  
+  write_array(vram, buffer, pos)
