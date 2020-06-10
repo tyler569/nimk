@@ -20,26 +20,26 @@ proc makeEntry*(c: char): TEntry =
     color16 = uint16 base_color
   return TEntry(c16 or (color16 shl 8))
 
-proc writeChar*(vram: PVidMem, entry: TEntry, pos: TPos) =
+proc writeChar*(entry: TEntry, pos: TPos) =
   ## Writes a character at the specified ``pos``.
 
   let index = (80 * pos.y) + pos.x
   vram[index] = entry
 
-proc screenClear*(vram: PVidMem) =
+proc screenClear*() =
   for i in 0 ..< Vga_width:
     for j in 0 ..< Vga_height:
-      writeChar(vram, makeEntry(' '), (i, j))
+      writeChar(makeEntry(' '), (i, j))
 
-proc writeString*(vram: PVidMem, text: string, pos: TPos) =
+proc writeString*(text: string, pos: TPos) =
   ## Writes a string at the specified ``pos`` with the specified ``color``.
 
   for i in 0 ..< text.len:
-    vram.writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
+    writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
 
-proc write_array*[N](vram: PVIDMem, text: array[N, char], pos: TPos) =
+proc write_array*[N](text: array[N, char], pos: TPos) =
   for i in 0 ..< text.len:
-    vram.writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
+    writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
 
 proc shift_buffer(buffer: var array[0..15, char]) =
   for i in countdown(15, 0):
@@ -48,7 +48,7 @@ proc shift_buffer(buffer: var array[0..15, char]) =
 proc to_char(i: int): char =
   return char (ord('0') + i)
 
-proc write_int*(vram: PVIDMem, number: int, pos: TPos) =
+proc write_int*(number: int, pos: TPos) =
   var
     buffer: array[0..15, char]
     num = number
@@ -66,4 +66,4 @@ proc write_int*(vram: PVIDMem, number: int, pos: TPos) =
 
   if digits == 0: digits = 1
   
-  write_array(vram, buffer, pos)
+  write_array(buffer, pos)
