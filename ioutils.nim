@@ -1,43 +1,43 @@
 const
-  VGAWidth* = 80
-  VGAHeight* = 25
+  vga_width* = 80
+  vga_height* = 25
 
 type
-  TEntry* = distinct uint16
-  TPos* = tuple[x: int, y: int]
+  VGAEntry* = distinct uint16
+  Pos* = tuple[x: int, y: int]
 
-  PVIDMem* = ptr array[0..VGAWidth * VGAHeight, TEntry]
+  VideoMem* = ptr array[0..vga_width * vga_height, VGAEntry]
 
 const
   virtual_offset* = 0xFFFF_FFFF_8000_0000
-  vram* = cast[PVIDMem](virtual_offset + 0xb8000)
+  vram* = cast[VideoMem](virtual_offset + 0xb8000)
 
   base_color = 0x07
 
-proc makeEntry*(c: char): TEntry =
+proc makeEntry*(c: char): VGAEntry =
   let
     c16 = uint16 ord(c)
     color16 = uint16 base_color
-  return TEntry(c16 or (color16 shl 8))
+  return VGAEntry(c16 or (color16 shl 8))
 
-proc writeChar*(entry: TEntry, pos: TPos) =
+proc writeChar*(entry: VGAEntry, pos: Pos) =
   ## Writes a character at the specified ``pos``.
 
   let index = (80 * pos.y) + pos.x
   vram[index] = entry
 
 proc screenClear*() =
-  for i in 0 ..< Vga_width:
-    for j in 0 ..< Vga_height:
+  for i in 0 ..< vga_width:
+    for j in 0 ..< vga_height:
       writeChar(makeEntry(' '), (i, j))
 
-proc writeString*(text: string, pos: TPos) =
+proc writeString*(text: string, pos: Pos) =
   ## Writes a string at the specified ``pos`` with the specified ``color``.
 
   for i in 0 ..< text.len:
     writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
 
-proc write_array*[N](text: array[N, char], pos: TPos) =
+proc write_array*[N](text: array[N, char], pos: Pos) =
   for i in 0 ..< text.len:
     writeChar(makeEntry(text[i]), (pos.x+i, pos.y))
 
@@ -48,7 +48,7 @@ proc shift_buffer(buffer: var array[0..15, char]) =
 proc to_char(i: int): char =
   return char (ord('0') + i)
 
-proc write_int*(number: int, pos: TPos) =
+proc write_int*(number: int, pos: Pos) =
   var
     buffer: array[0..15, char]
     num = number
