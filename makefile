@@ -11,12 +11,15 @@ all: nimos.iso
 boot.o: boot.asm
 	nasm -felf64 -o $@ $<
 
+io.o: io.asm
+	nasm -felf64 -o $@ $<
+
 string.o: string.c string.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-nimkernel: boot.o string.o $(NIMSRC) main.nim.cfg
+nimkernel: boot.o io.o string.o $(NIMSRC) main.nim.cfg
 	nim --nimcache:nimcache c main.nim
-	ld -g -nostdlib -o $@ nimcache/*.o boot.o string.o -T link.ld
+	ld -g -nostdlib -o $@ nimcache/*.o boot.o io.o string.o -T link.ld
 
 nimos.iso: nimkernel grub.cfg
 	mkdir -p isodir/boot/grub

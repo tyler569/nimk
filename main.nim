@@ -1,6 +1,7 @@
 import macros
 import ioutils
 import ngstring
+import x86
 
 iterator odd_numbers[N](a: array[N, int]): int =
   for x in a:
@@ -14,6 +15,12 @@ proc kernel_main() {.exportc.} =
   write_string("Expressive. Efficient. Elegant.", (0, 4))
 
   let c: ng_string = ng "Hello World"
+
+  outb(Port 0xe9, ord 'h')
+  outb(Port 0xe9, ord 'e')
+  outb(Port 0xe9, ord 'l')
+  outb(Port 0xe9, ord 'l')
+  outb(Port 0xe9, ord 'o')
 
   var g = 0
   let b = 8

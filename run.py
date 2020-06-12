@@ -13,6 +13,7 @@ parser.add_option('-V', '--no-video', action='store_false', help="Don't show vid
 parser.add_option('-i', '--interrupts', action='store_true', help='Show interrupt debug information')
 parser.add_option('-s', '--serial', action='store_true', help='Use serial stdioa(default)', default=True)
 parser.add_option('-n', '--no-serial', action='store_false', help='Do not use serial stdio', dest='serial')
+parser.add_option('--debugcon', action='store_true', help='Enable QEMU debug console (port E9)')
 parser.add_option('-m', '--monitor', action='store_true', help='Show the QEMU monitor on stdio (implies -T)')
 parser.add_option('-M', '--no-monitor', action='store_false', help='Do not show the QEMU monitor on stdio (default)', dest='monitor')
 parser.add_option('-x', '--net', action='store_true', help='Attach a network interface')
@@ -49,6 +50,8 @@ if options.monitor:
     qemu_command += ' -monitor stdio'
 if options.serial and not options.monitor:
     qemu_command += ' -serial stdio'
+if options.debugcon:
+    qemu_command += ' -debugcon stdio'
 if options.interrupts:
     qemu_command += ' -d int'
 if not options.video:
