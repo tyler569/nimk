@@ -22,7 +22,7 @@ all: nimos.iso
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-nimkernel: boot.o io.o string.o $(NIMSRC) main.nim.cfg
+nimkernel: boot.o isrs.o io.o string.o $(NIMSRC) main.nim.cfg
 	nim --nimcache:nimcache c main.nim
 	ld -g -nostdlib -o $@ nimcache/*.o *.o -T link.ld
 
