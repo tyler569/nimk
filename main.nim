@@ -1,7 +1,7 @@
 import macros
 import ioutils
 import ngstring
-import x86
+import serial
 
 iterator odd_numbers[N](a: array[N, int]): int =
   for x in a:
@@ -16,11 +16,8 @@ proc kernel_main() {.exportc.} =
 
   let c: ng_string = ng "Hello World"
 
-  outb(Port 0xe9, ord 'h')
-  outb(Port 0xe9, ord 'e')
-  outb(Port 0xe9, ord 'l')
-  outb(Port 0xe9, ord 'l')
-  outb(Port 0xe9, ord 'o')
+  uart.init
+  uart.write_string("Hello World\r\n");
 
   var g = 0
   let b = 8
