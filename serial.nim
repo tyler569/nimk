@@ -1,5 +1,4 @@
-
-import bitops
+import bits
 import x86
 
 const
@@ -18,10 +17,10 @@ const
 
 
 proc is_transmit_empty(port: Port): bool =
-  return (inb(port + UART_LINE_STATUS).bitand 0x20) != 0
+  return (inb(port + UART_LINE_STATUS) and 0x20) != 0
 
 proc is_data_available(port: Port): bool =
-  return (inb(port + UART_LINE_STATUS).bitand 0x01) != 0
+  return (inb(port + UART_LINE_STATUS) and 0x01) != 0
 
 proc wait_for_transmit_empty(port: Port) =
   while not is_transmit_empty(port):
@@ -51,13 +50,6 @@ proc enable_interrupt*(port: Port) =
   outb(port + UART_INTERRUPT_ENABLE, 9)
 
 proc init*(port: Port) =
-  # outb(port + UART_BAUD_HIGH, 0)
-  # outb(port + UART_BAUD_LOW , 3)
-  # outb(port + UART_LINE_CTRL, 0x80)
-  # outb(port + UART_BAUD_HIGH, 0)
-  # outb(port + UART_LINE_CTRL, 0x80)
-  # outb(port + UART_FIFO_CTRL, 0xC7)
-  # outb(port + UART_MODEM_CTRL, 0x0B)
   outb(port + UART_BAUD_HIGH, 0x00);
   outb(port + UART_LINE_CTRL, 0x80);
   outb(port + UART_BAUD_LOW , 0x03);

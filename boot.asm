@@ -189,21 +189,18 @@ stack_top:
 
 section .bss
 
-align 0x1000
+align 0x10
 global boot_kernel_stack
-global hhstack_guard_page
-hhstack_guard_page:
-    resb 0x1000
 boot_kernel_stack:
 hhstack:
     resb 0x2000
 hhstack_top:
 
 align 0x10
-global int_stack
-int_stack:
+global interrupt_stack
+interrupt_stack:
     resb 0x2000
-int_stack_top:
+interrupt_stack_top:
 
 global tss64.stack
     
@@ -211,7 +208,7 @@ section .data
 tss64:
     dd 0              ; reserved 0
 .stack:
-    dq int_stack_top  ; stack pl0
+    dq interrupt_stack_top  ; stack pl0
     dq 0              ; stack pl1
     dq 0              ; stack pl2
     dq 0              ; reserved 0
@@ -394,10 +391,4 @@ PT4: ; PT4 covers 800000 -> 1000000
 ;     dq 0x12345000 + PAGE_PRESENT
 ;     times 511 dq 0
 ; 
-
-section .text
-global read_ip
-read_ip:
-    mov rax, [rsp]
-    ret
 
