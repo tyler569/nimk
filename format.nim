@@ -25,7 +25,6 @@ proc format*(buffer: var openArray[uint8], number: int) =
 
 
 proc format(buffer: var openArray[uint8], s: string) =
-  discard
+  for i in 0..<s.len:
+    buffer[i] = uint8 s[i]
 
-proc format(buffer: var openArray[uint8], u: uint) =
-  discard

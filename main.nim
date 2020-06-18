@@ -16,30 +16,26 @@ template loop(body: untyped): untyped =
 
 
 proc kernel_main(a, b: uint) {.exportc.} =
-  screen_clear();
-  write_string("Nim", (0, 2))
-  write_string("Expressive. Efficient. Elegant.", (0, 4))
-
   # let test_string: String = $$ "Hello World"
 
   pic_init()
 
   uart.init()
-  uart.write_string("Hello World\r\n");
+  uart.write("Hello World\r\n")
+  uart.write(123456)
+  uart.write("\r\n")
 
   #for e in getStackTraceEntries():
-  #  uart.write_string(e.filename)
+  #  uart.write_string_string(e.filename)
 
-  var g = 0
-  let b = 8
   for odd in odd_numbers([1, 2, 3, 4, 5, 6, 7, 1337]):
-    write_int(odd, (5, b + g))
-    write_string("num: ", (0, b + g))
-    g += 1
+    uart.write("odd number: ")
+    uart.write(odd)
+    uart.write("\r\n")
 
-  uart.write_string("Enabling IRQs\r\n");
+  uart.write("Enabling IRQs\r\n")
   enable_irqs()
-  uart.write_string("Enabled IRQs\r\n");
+  uart.write("Enabled IRQs\r\n")
 
   unmask_irq 4
   loop:
@@ -48,9 +44,8 @@ proc kernel_main(a, b: uint) {.exportc.} =
 
 proc panic(message: string) =
   disable_irqs()
-  # uart.write_string("Main panic\r\n");
-  write_string("Panic: ", (0, 24))
-  write_string(message, (7, 24))
+  uart.write("Main panic:\r\n");
+  # uart.write_string(message)
   loop:
     halt()
 
@@ -60,7 +55,9 @@ proc stack_chk_fail() {.exportc: "__stack_chk_fail".} =
 
 
 proc c_interrupt_shim(frame: ptr Interrupt_Frame) {.exportc.} =
-  uart.write_string("Interrupt recieved\r\n")
+  uart.write("Interrupt recieved\r\n")
+  uart.write(cast[int](frame.interrupt_number))
+
   if frame.interrupt_number > 32:
     send_eoi(frame.interrupt_number)
   return

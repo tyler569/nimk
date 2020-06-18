@@ -23,7 +23,15 @@ const
 proc `+`*(p: Port, i: int): Port =
   Port(int(p) + i)
 
-proc outb*(p: Port, b: uint8) {.importc.}
+{.push stack_trace: off.}
+
+proc outb*(p: Port, b: uint8) =
+  asm """
+  outb %%al, %%dx
+  :
+  : "a"(b), "d"(p)
+  """
+
 proc outw*(p: Port, b: uint16) {.importc.}
 proc outl*(p: Port, b: uint32) {.importc.}
 

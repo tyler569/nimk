@@ -1,4 +1,4 @@
-import bits
+import format
 import x86
 
 const
@@ -30,24 +30,33 @@ proc wait_for_data_available(port: Port) =
   while not is_data_available(port):
     discard
 
+
 proc write_byte*(port: Port, b: uint8) =
   wait_for_transmit_empty(port)
   outb(port + UART_DATA, b)
 
-proc write_slice*(port: Port, slice: openArray[uint8]) =
+proc write*(port: Port, slice: openArray[uint8]) =
   for c in slice:
     write_byte(port, c)
 
-proc write_string*(port: Port, str: string) =
-  for c in str:
-    write_byte(port, uint8(c))
+proc write*(port: Port, str: string) =
+  for i in 0..<str.len:
+    write_byte(port, uint8(str[i]))
+
+proc write*(port: Port, i: int) =
+  var buffer: array[0..15, uint8]
+  format(buffer, i)
+  port.write(buffer)
+
 
 proc read_byte*(port: Port): uint8 =
   wait_for_data_available(port)
   return inb(port + UART_DATA)
 
+
 proc enable_interrupt*(port: Port) =
   outb(port + UART_INTERRUPT_ENABLE, 9)
+
 
 proc init*(port: Port) =
   outb(port + UART_BAUD_HIGH, 0x00);
